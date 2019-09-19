@@ -1,0 +1,9 @@
+default username: hello2
+default password: 123456
+
+
+db credentials 
+db name: teamvalid.
+db table: users.
+db password: ''
+db host: localhost.
