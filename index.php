@@ -1,3 +1,34 @@
+<?php
+include "app/init.php";
+$guest = new Validation();
+if($guest->loggedIn()){
+  header('Location:dashboard.php');
+}
+if(isset($_POST['submit'])){
+  $user = new User();
+  $required_feilds = array("username","password");
+  foreach($_POST as $key=>$value){
+    if(empty($value) && in_array($key,$required_feilds)){
+      $errors[] = "All feilds are required";
+      break 1;
+    } 
+  }
+  if($user->username_exists($_POST['username'])){
+      $old_password = $user->passwordHash($_POST['username']);
+      if(password_verify($_POST['password'],$old_password)){
+        $_SESSION['user_id'] = $user->login($_POST['username'],$old_password);
+        //echo $_SESSION['user_id'];
+        header('Location:dashboard.php');
+      }else{
+        $errors[] = "invalid username/password combination";
+      }
+  }else{
+    $errors[] = "sorry, we cant find a user with that username";
+  }
+  
+  }
+
+?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -11,13 +42,21 @@
 
     <title>TeamValid | Loginpage</title>
   </head>
-  <body class="">
+  <body>
    <div class="container ">
      <div class="row mt-3 d-flex">
        <div class="col-lg-4 m-auto">
+         <?php if(isset($_GET['submitted'])) {
+              echo '<div class="alert alert-success">
+                      Account created successfully!
+              </div>';
+           }
+          ?>
+         <?php if(!empty($errors)){ echo $user->errors($errors); } ?> 
          <div class="card">
+           <form method="POST">
            <div class="card-header">
-             REGISTER
+             LOGIN
            </div>
            <div class="card-body">
              <div class="login">
@@ -25,18 +64,7 @@
           <div class="input-group-prepend">
             <span class="input-group-text" id="basic-addon1"><i class="fa fa-user"></i></span>
           </div>
-          <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
-        </div>
-
-        
-
-         </div>
-         <div class="login">
-           <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text" id="basic-addon1"><i class="fa fa-envelope"></i></span>
-          </div>
-          <input type="email" class="form-control" placeholder="Email" aria-label="email" aria-describedby="basic-addon1">
+          <input type="text" class="form-control" name="username" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
         </div>
 
         
@@ -47,18 +75,7 @@
           <div class="input-group-prepend">
             <span class="input-group-text" id="basic-addon1"><i class="fa fa-lock"></i></span>
           </div>
-          <input type="password" class="form-control" placeholder="Enter Password" aria-label="email" aria-describedby="basic-addon1">
-        </div>
-
-        
-
-         </div>
-         <div class="login">
-           <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text" id="basic-addon1"><i class="fa fa-lock"></i></span>
-          </div>
-          <input type="password" class="form-control" placeholder="Confirm Password" aria-label="email" aria-describedby="basic-addon1">
+          <input type="Password" class="form-control" name="password" placeholder="Password" aria-label="Username" aria-describedby="basic-addon1">
         </div>
 
         
@@ -66,10 +83,11 @@
          </div>
            </div>
            <div class="card-footer">
-             <button type="submit" class="btn btn-primary">Register</button>
+             <button type="submit" name="submit" class="btn btn-primary">Log in</button>
            </div>
+          </form>       
          </div>
-         <div class="mt-3">Already have an account? <a href="index.html">Log in</a></div>
+         <div class="mt-3">Don't have an account? <a href="register.php">register here</a></div>
        </div>
      </div>
    </div>
