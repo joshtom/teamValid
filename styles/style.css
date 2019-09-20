@@ -17,7 +17,20 @@ a{
     color: #2D2D2D;
     text-decoration: none;
 }
-
+.alert{
+    width:100%;
+    border-radius:5px;
+    padding:3px;
+    text-align:left;
+}
+.alert-success{
+    color:#fff;  
+    background:#5cb85c;
+}
+.alert-danger{
+    color:#fff;
+    background:#d9534f;
+}
 .container{
     width: 100%;
     height: 100%;
